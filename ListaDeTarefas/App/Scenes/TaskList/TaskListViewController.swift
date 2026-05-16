@@ -22,11 +22,18 @@ class TaskListViewController: UIViewController {
     
     private func configNavigationBar() {
         navigationItem.title = "Tarefas"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAddTask))
     }
     
     private func configDataSourcesAndDelegates() {
         contentView.tableView.dataSource = self
         contentView.tableView.delegate = self
+    }
+    
+    @objc private func didTapAddTask() {
+        let taskFormVC = TaskFormViewController()
+        taskFormVC.delegate = self
+        navigationController?.pushViewController(taskFormVC, animated: true)
     }
 }
 
@@ -36,15 +43,9 @@ extension TaskListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
         let task = viewModel.taskForRow(at: indexPath.row)
-        
-        var content = cell.defaultContentConfiguration()
-        content.text = task.title
-        content.secondaryText = "\(task.date)\n\(task.id)"
-        
-        cell.contentConfiguration = content
+        cell.configure(task: task)
         return cell
     }
 }
@@ -52,5 +53,12 @@ extension TaskListViewController: UITableViewDataSource {
 extension TaskListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension TaskListViewController: TaskFormViewControllerDelegate {
+    func addTask(task: Tarefa) {
+        viewModel.addTask(task)
+        contentView.tableView.reloadData()
     }
 }
