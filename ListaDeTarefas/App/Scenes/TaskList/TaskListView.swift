@@ -12,7 +12,7 @@ final class TaskListView: UIView {
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(TaskCell.self, forCellReuseIdentifier: TaskCell.identifier)
         return tableView
     }()
     
