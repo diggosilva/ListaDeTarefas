@@ -89,7 +89,7 @@ final class TaskCell: UITableViewCell {
     func configure(task: Tarefa) {
         priorityView.backgroundColor = task.priority.color
         titleLabel.text = task.title
-        dateLabel.text = dateRelative(task.date)
+        dateLabel.text = task.date.dateRelative()
         
         setupCell(with: task)
     }
@@ -108,12 +108,5 @@ final class TaskCell: UITableViewCell {
             dateLabel.alpha = 1
             self.accessoryType = .none
         }
-    }
-    
-    private func dateRelative(_ date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.dateTimeStyle = .named
-        formatter.locale = Locale(identifier: "pt_BR")
-        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
