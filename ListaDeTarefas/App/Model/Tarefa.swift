@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum TaskPriority: Int {
+enum TaskPriority: Int, Codable {
     case low = 0
     case medium = 1
     case high = 2
@@ -21,8 +21,8 @@ enum TaskPriority: Int {
     }
 }
 
-struct Tarefa: Identifiable {
-    let id: UUID = UUID()
+struct Tarefa: Identifiable, Codable {
+    let id: UUID
     let title: String
     var isCompleted: Bool = false
     let priority: TaskPriority
