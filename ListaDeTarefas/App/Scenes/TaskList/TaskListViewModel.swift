@@ -12,6 +12,7 @@ protocol TaskListViewModelProtocol {
     func taskForRow(at index: Int) -> Tarefa
     func addTask(_ task: Tarefa)
     func getTasks() -> [Tarefa]
+    func alternateCompletion(task: Tarefa)
 }
 
 final class TaskListViewModel: TaskListViewModelProtocol {
@@ -39,5 +40,17 @@ final class TaskListViewModel: TaskListViewModelProtocol {
     
     func getTasks() -> [Tarefa] {
         return tasks
+    }
+    
+//    func alternateCompletion(at index: Int) {
+//        if let index = tasks.firstIndex(where: { $0.id == tasks[index].id }) {
+//            tasks[index].isCompleted.toggle()
+//        }
+//    }
+    
+    func alternateCompletion(task: Tarefa) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[index].isCompleted.toggle()
+        }
     }
 }
