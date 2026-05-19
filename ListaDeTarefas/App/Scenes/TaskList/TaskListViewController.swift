@@ -53,6 +53,10 @@ extension TaskListViewController: UITableViewDataSource {
 extension TaskListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let task = viewModel.taskForRow(at: indexPath.row)
+        viewModel.alternateCompletion(task: task)
+        contentView.tableView.reloadData()
     }
 }
 
