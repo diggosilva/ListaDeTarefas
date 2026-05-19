@@ -60,7 +60,6 @@ final class TaskCell: UITableViewCell {
         setupHierarchy()
         setupConstraints()
         setupConfigurations()
-        self.accessoryType = .none
     }
     
     private func setupHierarchy() {
@@ -83,7 +82,23 @@ final class TaskCell: UITableViewCell {
     }
     
     private func setupConfigurations() {
-        
+        self.accessoryType = .none
+    }
+    
+    private func setupCell(alpha: CGFloat, priorityColor: UIColor, accessoryType: UITableViewCell.AccessoryType) {
+        priorityView.backgroundColor = priorityColor
+        priorityView.alpha = alpha
+        titleLabel.alpha = alpha
+        dateLabel.alpha = alpha
+        self.accessoryType = accessoryType
+    }
+    
+    private func isCompleted(task: Tarefa) {
+        if task.isCompleted {
+            setupCell(alpha: 0.5, priorityColor: .systemGreen, accessoryType: .checkmark)
+        } else {
+            setupCell(alpha: 1.0, priorityColor: task.priority.color, accessoryType: .none)
+        }
     }
     
     func configure(task: Tarefa) {
@@ -91,22 +106,6 @@ final class TaskCell: UITableViewCell {
         titleLabel.text = task.title
         dateLabel.text = task.date.dateRelative()
         
-        setupCell(with: task)
-    }
-    
-    private func setupCell(with task: Tarefa) {
-        if task.isCompleted {
-            priorityView.backgroundColor = .systemGreen
-            priorityView.alpha = 0.5
-            titleLabel.alpha = 0.5
-            dateLabel.alpha = 0.5
-            self.accessoryType = .checkmark
-        } else {
-            priorityView.backgroundColor = task.priority.color
-            priorityView.alpha = 1
-            titleLabel.alpha = 1
-            dateLabel.alpha = 1
-            self.accessoryType = .none
-        }
+        isCompleted(task: task)
     }
 }
