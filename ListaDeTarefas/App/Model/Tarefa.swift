@@ -22,7 +22,7 @@ enum TaskPriority: Int, Codable {
 }
 
 struct Tarefa: Identifiable, Codable {
-    let id: UUID
+    let id: String
     let title: String
     var isCompleted: Bool = false
     let priority: TaskPriority
