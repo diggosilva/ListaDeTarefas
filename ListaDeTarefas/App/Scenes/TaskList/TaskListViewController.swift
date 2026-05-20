@@ -11,6 +11,7 @@ class TaskListViewController: UIViewController {
     
     private let contentView = TaskListView()
     private let viewModel = TaskListViewModel()
+    private var dataSource: UITableViewDiffableDataSource<Int, String>?
     
     override func loadView() { view = contentView }
     
@@ -18,6 +19,7 @@ class TaskListViewController: UIViewController {
         super.viewDidLoad()
         configNavigationBar()
         configDataSourcesAndDelegates()
+        updateSnapshot()
     }
     
     private func configNavigationBar() {
@@ -26,8 +28,38 @@ class TaskListViewController: UIViewController {
     }
     
     private func configDataSourcesAndDelegates() {
-        contentView.tableView.dataSource = self
+        configDataSource()
         contentView.tableView.delegate = self
+    }
+    
+    private func configDataSource() {
+        dataSource = UITableViewDiffableDataSource<Int, String>(tableView: contentView.tableView) { [weak self] tableView, indexPath, taskID in
+            guard let self = self,
+                  let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
+            
+            if let task = self.viewModel.getTasks().first(where: { $0.id == taskID }) {
+                cell.configure(task: task)
+            }
+            return cell
+        }
+    }
+    
+    private func updateSnapshot(animated: Bool = true) {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
+        snapshot.appendSections([0])
+        
+        let tasks = viewModel.getTasks()
+        let ids = tasks.map({ $0.id })
+        
+        snapshot.appendItems(ids, toSection: 0)
+        
+        if #available(iOS 15.0, *) {
+            snapshot.reconfigureItems(ids)
+        } else {
+            snapshot.reloadItems(ids)
+        }
+        
+        dataSource?.apply(snapshot, animatingDifferences: animated)
     }
     
     @objc private func didTapAddTask() {
@@ -37,32 +69,20 @@ class TaskListViewController: UIViewController {
     }
 }
 
-extension TaskListViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows()
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
-        let task = viewModel.taskForRow(at: indexPath.row)
-        cell.configure(task: task)
-        return cell
-    }
-}
-
 extension TaskListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let task = viewModel.taskForRow(at: indexPath.row)
+        guard let taskID = dataSource?.itemIdentifier(for: indexPath),
+              let task = viewModel.getTasks().first(where: { $0.id == taskID }) else { return }
         viewModel.alternateCompletion(task: task)
-        contentView.tableView.reloadData()
+        updateSnapshot()
     }
 }
 
 extension TaskListViewController: TaskFormViewControllerDelegate {
     func addTask(task: Tarefa) {
         viewModel.addTask(task)
-        contentView.tableView.reloadData()
+        updateSnapshot()
     }
 }
