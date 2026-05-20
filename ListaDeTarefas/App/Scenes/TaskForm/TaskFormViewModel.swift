@@ -13,7 +13,7 @@ protocol TaskFormViewModelProtocol {
 
 final class TaskFormViewModel: TaskFormViewModelProtocol {
     func addTask(title: String, priority: TaskPriority.RawValue) -> Tarefa {
-        let newTarefa = Tarefa(id: UUID(), title: title, priority: TaskPriority(rawValue: priority) ?? .low, date: Date())
+        let newTarefa = Tarefa(id: UUID().uuidString, title: title, priority: TaskPriority(rawValue: priority) ?? .low, date: Date())
         return newTarefa
     }
 }
