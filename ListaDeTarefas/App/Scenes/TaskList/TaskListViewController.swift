@@ -69,6 +69,34 @@ class TaskListViewController: UIViewController {
     }
 }
 
+extension TaskListViewController {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let taskID = dataSource?.itemIdentifier(for: indexPath),
+              let task = viewModel.getTasks().first(where: { $0.id == taskID }) else { return nil }
+        let deleteAction = UIContextualAction(style: .destructive, title: "") { [weak self] _, _, completionHandler in
+            guard let self = self else { return }
+            
+            let alert = UIAlertController(title: "", message: "Deseja realmente apagar a tarefa '\(task.title.uppercased())'? Essa ação não pode ser desfeita.", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Apagar", style: .destructive) { _ in
+                self.viewModel.removeTask(task: task)
+                self.updateSnapshot()
+                completionHandler(true)
+            }
+            
+            let cancel = UIAlertAction(title: "Cancelar", style: .cancel) { _ in
+                completionHandler(false)
+            }
+                        
+            alert.addAction(ok)
+            alert.addAction(cancel)
+            present(alert, animated: true)
+        }
+        
+        deleteAction.image = UIImage(systemName: "trash")
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+}
+
 extension TaskListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
