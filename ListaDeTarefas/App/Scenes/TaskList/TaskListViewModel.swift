@@ -11,6 +11,7 @@ protocol TaskListViewModelProtocol {
     func addTask(_ task: Tarefa)
     func getTasks() -> [Tarefa]
     func alternateCompletion(task: Tarefa)
+    func removeTask(task: Tarefa)
 }
 
 final class TaskListViewModel: TaskListViewModelProtocol {
@@ -35,6 +36,13 @@ final class TaskListViewModel: TaskListViewModelProtocol {
     func alternateCompletion(task: Tarefa) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isCompleted.toggle()
+            repository.save(tasks)
+        }
+    }
+    
+    func removeTask(task: Tarefa) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks.remove(at: index)
             repository.save(tasks)
         }
     }

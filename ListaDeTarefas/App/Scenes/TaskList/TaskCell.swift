@@ -34,6 +34,15 @@ final class TaskCell: UITableViewCell {
         return label
     }()
     
+    lazy var checkMarkImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(systemName: "checkmark.circle.fill")
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .systemGreen
+        return imageView
+    }()
+    
     lazy var vStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [titleLabel, dateLabel])
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +60,7 @@ final class TaskCell: UITableViewCell {
         priorityView.backgroundColor = nil
         titleLabel.text = nil
         dateLabel.text = nil
-        self.accessoryType = .none
+        checkMarkImage.image = nil
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -63,49 +72,54 @@ final class TaskCell: UITableViewCell {
     }
     
     private func setupHierarchy() {
-        addSubview(priorityView)
-        addSubview(vStack)
+        contentView.addSubview(priorityView)
+        contentView.addSubview(vStack)
+        contentView.addSubview(checkMarkImage)
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            priorityView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            priorityView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            priorityView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            priorityView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            priorityView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            priorityView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             priorityView.widthAnchor.constraint(equalToConstant: 4),
             
             vStack.topAnchor.constraint(equalTo: priorityView.topAnchor),
             vStack.leadingAnchor.constraint(equalTo: priorityView.trailingAnchor, constant: 8),
-            vStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            vStack.trailingAnchor.constraint(equalTo: checkMarkImage.leadingAnchor, constant: -16),
             vStack.bottomAnchor.constraint(equalTo: priorityView.bottomAnchor),
+            
+            checkMarkImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            checkMarkImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            checkMarkImage.widthAnchor.constraint(equalToConstant: 24),
+            checkMarkImage.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
     
     private func setupConfigurations() {
         self.accessoryType = .none
+        self.selectionStyle = .none
     }
     
-    private func setupCell(alpha: CGFloat, priorityColor: UIColor, accessoryType: UITableViewCell.AccessoryType) {
+    private func setupCell(alpha: CGFloat, priorityColor: UIColor, checkmarkAlpha: CGFloat) {
         priorityView.backgroundColor = priorityColor
         priorityView.alpha = alpha
         titleLabel.alpha = alpha
         dateLabel.alpha = alpha
-        self.accessoryType = accessoryType
+        checkMarkImage.alpha = checkmarkAlpha
     }
     
     private func isCompleted(task: Tarefa) {
         if task.isCompleted {
-            setupCell(alpha: 0.5, priorityColor: .systemGreen, accessoryType: .checkmark)
+            setupCell(alpha: 0.5, priorityColor: .systemGreen, checkmarkAlpha: 1.0)
         } else {
-            setupCell(alpha: 1.0, priorityColor: task.priority.color, accessoryType: .none)
+            setupCell(alpha: 1.0, priorityColor: task.priority.color, checkmarkAlpha: 0.0)
         }
     }
     
     func configure(task: Tarefa) {
-        priorityView.backgroundColor = task.priority.color
         titleLabel.text = task.title
         dateLabel.text = task.date.dateRelative()
-        
         isCompleted(task: task)
     }
 }
