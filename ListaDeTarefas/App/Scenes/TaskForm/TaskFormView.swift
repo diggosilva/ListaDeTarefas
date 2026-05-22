@@ -28,6 +28,7 @@ final class TaskFormView: UIView {
         textField.placeholder = "Título da tarefa"
         textField.borderStyle = .roundedRect
         textField.clearButtonMode = .whileEditing
+        textField.autocapitalizationType = .words
         return textField
     }()
     

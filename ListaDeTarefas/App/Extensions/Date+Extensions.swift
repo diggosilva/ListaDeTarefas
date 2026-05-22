@@ -14,4 +14,11 @@ extension Date {
         formatter.locale = Locale(identifier: "pt_BR")
         return formatter.localizedString(for: self, relativeTo: Date())
     }
+    
+    func formatDate() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.dateFormat = "dd/MM/yyyy - HH:mm:ss"
+        return formatter.string(from: self)
+    }
 }
