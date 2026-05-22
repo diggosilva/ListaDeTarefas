@@ -119,7 +119,7 @@ final class TaskCell: UITableViewCell {
     
     func configure(task: Tarefa) {
         titleLabel.text = task.title
-        dateLabel.text = task.date.dateRelative()
+        dateLabel.text = task.date.formatDate()
         isCompleted(task: task)
     }
 }
