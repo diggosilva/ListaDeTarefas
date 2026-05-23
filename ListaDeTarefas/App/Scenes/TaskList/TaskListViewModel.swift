@@ -22,10 +22,12 @@ final class TaskListViewModel: TaskListViewModelProtocol {
     init(repository: RepositoryProtocol = Repository()) {
         self.repository = repository
         tasks = repository.load()
+        self.sortTasks()
     }
     
     func addTask(_ task: Tarefa) {
         tasks.append(task)
+        sortTasks()
         repository.save(tasks)
     }
     
@@ -36,6 +38,7 @@ final class TaskListViewModel: TaskListViewModelProtocol {
     func alternateCompletion(task: Tarefa) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isCompleted.toggle()
+            sortTasks()
             repository.save(tasks)
         }
     }
@@ -44,6 +47,15 @@ final class TaskListViewModel: TaskListViewModelProtocol {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks.remove(at: index)
             repository.save(tasks)
+        }
+    }
+    
+    private func sortTasks() {
+        tasks.sort { task1, task2 in
+            if task1.isCompleted != task2.isCompleted {
+                return !task1.isCompleted
+            }
+            return task1.priority.rawValue < task2.priority.rawValue
         }
     }
 }
